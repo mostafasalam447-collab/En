@@ -21,7 +21,6 @@
             direction: ltr;
         }
 
-        /* العداد العلوي الثابت */
         .header-stats {
             position: fixed;
             top: 0;
@@ -68,7 +67,6 @@
             padding: 20px;
             margin-bottom: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
         }
 
         .q-text {
@@ -112,14 +110,8 @@
             color: white;
         }
 
-        .option-btn:disabled {
-            cursor: default;
-        }
-
         @media (max-width: 600px) {
             .options-grid { grid-template-columns: 1fr; }
-            .stat-label { font-size: 0.6rem; }
-            .stat-val { font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -136,7 +128,7 @@
         </div>
         <div class="stat-box">
             <span class="stat-label">Total</span>
-            <span id="t-count" class="stat-val">0 / 172</span>
+            <span id="t-count" class="stat-val">0 / 0</span>
         </div>
         <div class="stat-box">
             <span class="stat-label">Percent</span>
@@ -146,200 +138,194 @@
 
     <div class="container">
         <div id="mcq-section">
-            <div class="section-header">PART 1: Multiple Choice Questions (129)</div>
+            <div class="section-header">PART 1: Multiple Choice Questions</div>
+            
             <div id="mcq-container"></div>
         </div>
 
         <div id="tf-section">
-            <div class="section-header">PART 2: True / False Questions (43)</div>
+            <div class="section-header">PART 2: True / False Questions</div>
             <div id="tf-container"></div>
         </div>
     </div>
 
     <script>
-        // مصفوفة الأسئلة (تم دمج المجموعتين)
-        const quizQuestions = [
-  // Part 1: Basic Terms and Directions
-  { question: "Anterior refers to:", options: ["Back", "Front", "Side", "Middle"], answer: "Front" },
-  { question: "Posterior means:", options: ["Toward the front", "Toward the back", "Toward the feet", "Toward the midline"], answer: "Toward the back" },
-  { question: "Superior means:", options: ["Lower", "Toward the midline", "Above", "Deep"], answer: "Above" },
-  { question: "Inferior means:", options: ["Below", "Toward the back", "Above", "Superficial"], answer: "Below" },
-  { question: "The term medial means:", options: ["Near the midline", "Near the surface", "Far from midline", "Above"], answer: "Near the midline" },
-  { question: "Lateral means:", options: ["Toward the middle", "Toward the side", "Far from root", "Toward feet"], answer: "Toward the side" },
-  { question: "Proximal means:", options: ["Near the root", "Toward head", "Toward the feet", "Toward trunk"], answer: "Near the root" },
-  { question: "Distal means:", options: ["Toward head", "Toward back", "Away from root", "Toward the head"], answer: "Away from root" },
-  { question: "External means:", options: ["Deep", "Outside", "Middle", "Lower"], answer: "Outside" },
-  { question: "Internal means:", options: ["Outside", "Surface", "Above", "Inside"], answer: "Inside" },
-  { question: "Deep means:", options: ["Toward surface", "Away from surface", "Above", "Between"], answer: "Away from surface" },
-  { question: "The sagittal plane divides the body into:", options: ["Upper and lower", "Front and back", "Right and left", "Deep and superficial"], answer: "Right and left" },
-  { question: "The coronal plane divides the body into:", options: ["Right/left", "Upper/lower", "Anterior/posterior", "Internal/external"], answer: "Anterior/posterior" },
-  { question: "The transverse plane divides the body into:", options: ["Superior/inferior", "Medial/lateral", "Right/left", "External/internal"], answer: "Superior/inferior" },
-  { question: "The axial plane is also known as:", options: ["Transverse plane", "Sagittal", "Coronal", "Median"], answer: "Transverse plane" },
-  { question: "The root in hepatitis is:", options: ["itis", "hepat", "heap", "hepta"], answer: "hepat" },
-  { question: "The suffix -itis means:", options: ["Pain", "Tumor", "Inflammation", "Removal"], answer: "Inflammation" },
-  { question: "The suffix -ectomy means:", options: ["Surgical removal", "Enlargement", "Hardening", "Vision"], answer: "Surgical removal" },
-  { question: "The suffix -oma means:", options: ["Pain", "Tumor", "Disease", "Cell"], answer: "Tumor" },
-  { question: "The suffix -algia means:", options: ["Pain", "Inflammation", "Tumor", "Pus"], answer: "Pain" },
-  { question: "The suffix -megaly means:", options: ["Hardening", "Enlargement", "Breakdown", "Excess"], answer: "Enlargement" },
-  { question: "The suffix -logy means:", options: ["Study of", "Pain", "Tumor", "Vision"], answer: "Study of" },
-  { question: "The suffix -derma refers to:", options: ["Lung", "Brain", "Skin", "Kidney"], answer: "Skin" },
-  { question: "The root cardio refers to the:", options: ["Liver", "Heart", "Brain", "Stomach"], answer: "Heart" },
-  { question: "The root gastro refers to the:", options: ["Liver", "Intestine", "Stomach", "Heart"], answer: "Stomach" },
-  { question: "The suffix -pathy means:", options: ["Disease", "Vision", "Enlargement", "Hardening"], answer: "Disease" },
-  { question: "The prefix hyper- means:", options: ["Low", "Excessive", "Same", "Few"], answer: "Excessive" },
-  { question: "The prefix hypo- means:", options: ["Excess", "Low/Under", "Before", "Around"], answer: "Low/Under" },
-  { question: "The prefix pre- means:", options: ["After", "Before", "Against", "Around"], answer: "Before" },
-  { question: "The prefix post- means:", options: ["Before", "Against", "After", "Across"], answer: "After" },
-  { question: "The prefix anti- means:", options: ["Before", "Against", "After", "Within"], answer: "Against" },
-  { question: "The prefix brady- means:", options: ["Fast", "Slow", "Large", "Strong"], answer: "Slow" },
-  { question: "The prefix tachy- means:", options: ["Fast", "Slow", "Weak", "Diffuse"], answer: "Fast" },
-  { question: "The prefix poly- means:", options: ["Few", "Many", "Large", "Small"], answer: "Many" },
-  { question: "The prefix mono- means:", options: ["Two", "One", "Many", "Small"], answer: "One" },
-  { question: "The prefix inter- means:", options: ["Between", "Below", "Within", "Above"], answer: "Between" },
-  { question: "The prefix intra- means:", options: ["Between", "Inside/Within", "Outside", "Above"], answer: "Inside/Within" },
-  { question: "The prefix peri- means:", options: ["Before", "Around", "Within", "Above"], answer: "Around" },
-  { question: "The prefix sub- means:", options: ["Above", "Below/Under", "Between", "Within"], answer: "Below/Under" },
-  { question: "Hepatomegaly means enlargement of the:", options: ["Heart", "Kidney", "Liver", "Lung"], answer: "Liver" },
-  { question: "Nephritis is inflammation of the:", options: ["Liver", "Kidney", "Heart", "Lung"], answer: "Kidney" },
-  { question: "Dermatitis means inflammation of the:", options: ["Brain", "Skin", "Lung", "Muscle"], answer: "Skin" },
-  { question: "Arthritis refers to inflammation of the:", options: ["Bone", "Joint", "Liver", "Kidney"], answer: "Joint" },
-  { question: "The term tachypnea means:", options: ["Slow breathing", "Fast breathing", "No breathing", "Painful breathing"], answer: "Fast breathing" },
-  { question: "The term bradypnea means:", options: ["Fast breathing", "No breathing", "Slow breathing", "Deep breathing"], answer: "Slow breathing" },
-  { question: "Hematology is the study of:", options: ["Heart", "Blood", "Liver", "Skin"], answer: "Blood" },
-  { question: "The term osteocyte refers to a cell of the:", options: ["Muscle", "Bone", "Brain", "Skin"], answer: "Bone" },
-  { question: "Leukocyte refers to a:", options: ["Red blood cell", "Platelet", "White blood cell", "Liver cell"], answer: "White blood cell" },
-  { question: "The combining form cyto- means:", options: ["Cell", "Bone", "Tissue", "Liver"], answer: "Cell" },
-  { question: "The root neuro- means:", options: ["Nerve", "Muscle", "Liver", "Kidney"], answer: "Nerve" },
+        // 1. مصفوفة MCQ
+        const mcqData = [
+            { question: "Anterior refers to:", options: ["Back", "Front", "Side", "Middle"], answer: "Front" },
+            { question: "Posterior means:", options: ["Toward the front", "Toward the back", "Toward the feet", "Toward the midline"], answer: "Toward the back" },
+            { question: "Superior means:", options: ["Lower", "Toward the midline", "Above", "Deep"], answer: "Above" },
+            { question: "Inferior means:", options: ["Below", "Toward the back", "Above", "Superficial"], answer: "Below" },
+            { question: "The term medial means:", options: ["Near the midline", "Near the surface", "Far from midline", "Above"], answer: "Near the midline" },
+            { question: "Lateral means:", options: ["Toward the middle", "Toward the side", "Far from root", "Toward feet"], answer: "Toward the side" },
+            { question: "Proximal means:", options: ["Near the root", "Toward head", "Toward the feet", "Toward trunk"], answer: "Near the root" },
+            { question: "Distal means:", options: ["Toward head", "Toward back", "Away from root", "Toward the head"], answer: "Away from root" },
+            { question: "External means:", options: ["Deep", "Outside", "Middle", "Lower"], answer: "Outside" },
+            { question: "Internal means:", options: ["Outside", "Surface", "Above", "Inside"], answer: "Inside" },
+            { question: "Deep means:", options: ["Toward surface", "Away from surface", "Above", "Between"], answer: "Away from surface" },
+            { question: "The sagittal plane divides the body into:", options: ["Upper and lower", "Front and back", "Right and left", "Deep and superficial"], answer: "Right and left" },
+            { question: "The coronal plane divides the body into:", options: ["Right/left", "Upper/lower", "Anterior/posterior", "Internal/external"], answer: "Anterior/posterior" },
+            { question: "The transverse plane divides the body into:", options: ["Superior/inferior", "Medial/lateral", "Right/left", "External/internal"], answer: "Superior/inferior" },
+            { question: "The axial plane is also known as:", options: ["Transverse plane", "Sagittal", "Coronal", "Median"], answer: "Transverse plane" },
+            { question: "The root in hepatitis is:", options: ["itis", "hepat", "heap", "hepta"], answer: "hepat" },
+            { question: "The suffix -itis means:", options: ["Pain", "Tumor", "Inflammation", "Removal"], answer: "Inflammation" },
+            { question: "The suffix -ectomy means:", options: ["Surgical removal", "Enlargement", "Hardening", "Vision"], answer: "Surgical removal" },
+            { question: "The suffix -oma means:", options: ["Pain", "Tumor", "Disease", "Cell"], answer: "Tumor" },
+            { question: "The suffix -algia means:", options: ["Pain", "Inflammation", "Tumor", "Pus"], answer: "Pain" },
+            { question: "The suffix -megaly means:", options: ["Hardening", "Enlargement", "Breakdown", "Excess"], answer: "Enlargement" },
+            { question: "The suffix -logy means:", options: ["Study of", "Pain", "Tumor", "Vision"], answer: "Study of" },
+            { question: "The suffix -derma refers to:", options: ["Lung", "Brain", "Skin", "Kidney"], answer: "Skin" },
+            { question: "The root cardio refers to the:", options: ["Liver", "Heart", "Brain", "Stomach"], answer: "Heart" },
+            { question: "The root gastro refers to the:", options: ["Liver", "Intestine", "Stomach", "Heart"], answer: "Stomach" },
+            { question: "The suffix -pathy means:", options: ["Disease", "Vision", "Enlargement", "Hardening"], answer: "Disease" },
+            { question: "The prefix hyper- means:", options: ["Low", "Excessive", "Same", "Few"], answer: "Excessive" },
+            { question: "The prefix hypo- means:", options: ["Excess", "Low/Under", "Before", "Around"], answer: "Low/Under" },
+            { question: "The prefix pre- means:", options: ["After", "Before", "Against", "Around"], answer: "Before" },
+            { question: "The prefix post- means:", options: ["Before", "Against", "After", "Across"], answer: "After" },
+            { question: "The prefix anti- means:", options: ["Before", "Against", "After", "Within"], answer: "Against" },
+            { question: "The prefix brady- means:", options: ["Fast", "Slow", "Large", "Strong"], answer: "Slow" },
+            { question: "The prefix tachy- means:", options: ["Fast", "Slow", "Weak", "Diffuse"], answer: "Fast" },
+            { question: "The prefix poly- means:", options: ["Few", "Many", "Large", "Small"], answer: "Many" },
+            { question: "The prefix mono- means:", options: ["Two", "One", "Many", "Small"], answer: "One" },
+            { question: "The prefix inter- means:", options: ["Between", "Below", "Within", "Above"], answer: "Between" },
+            { question: "The prefix intra- means:", options: ["Between", "Inside/Within", "Outside", "Above"], answer: "Inside/Within" },
+            { question: "The prefix peri- means:", options: ["Before", "Around", "Within", "Above"], answer: "Around" },
+            { question: "The prefix sub- means:", options: ["Above", "Below/Under", "Between", "Within"], answer: "Below/Under" },
+            { question: "Hepatomegaly means enlargement of the:", options: ["Heart", "Kidney", "Liver", "Lung"], answer: "Liver" },
+            { question: "Nephritis is inflammation of the:", options: ["Liver", "Kidney", "Heart", "Lung"], answer: "Kidney" },
+            { question: "Dermatitis means inflammation of the:", options: ["Brain", "Skin", "Lung", "Muscle"], answer: "Skin" },
+            { question: "Arthritis refers to inflammation of the:", options: ["Bone", "Joint", "Liver", "Kidney"], answer: "Joint" },
+            { question: "The term tachypnea means:", options: ["Slow breathing", "Fast breathing", "No breathing", "Painful breathing"], answer: "Fast breathing" },
+            { question: "The term bradypnea means:", options: ["Fast breathing", "No breathing", "Slow breathing", "Deep breathing"], answer: "Slow breathing" },
+            { question: "Hematology is the study of:", options: ["Heart", "Blood", "Liver", "Skin"], answer: "Blood" },
+            { question: "The term osteocyte refers to a cell of the:", options: ["Muscle", "Bone", "Brain", "Skin"], answer: "Bone" },
+            { question: "Leukocyte refers to a:", options: ["Red blood cell", "Platelet", "White blood cell", "Liver cell"], answer: "White blood cell" },
+            { question: "The combining form cyto- means:", options: ["Cell", "Bone", "Tissue", "Liver"], answer: "Cell" },
+            { question: "The root neuro- means:", options: ["Nerve", "Muscle", "Liver", "Kidney"], answer: "Nerve" },
+            { question: "The term hepatitis means:", options: ["Liver tumor", "Liver inflammation", "Heart inflammation", "Kidney inflammation"], answer: "Liver inflammation" },
+            { question: "The prefix endo- means:", options: ["Green", "Within", "Around", "Large"], answer: "Within" },
+            { question: "The prefix exo- means:", options: ["Inside", "Outside", "Against", "Above"], answer: "Outside" },
+            { question: "The suffix -lysis means:", options: ["Dissolving", "Disease", "Enlargement", "Pain"], answer: "Dissolving" },
+            { question: "Myocardium refers to:", options: ["Heart muscle", "Heart lining", "Heart valve", "Heart chamber"], answer: "Heart muscle" },
+            { question: "The root pulmo- refers to the:", options: ["Liver", "Lung", "Heart", "Brain"], answer: "Lung" },
+            { question: "The term gastrectomy means:", options: ["Stomach infection", "Surgical removal of stomach", "Stomach swelling", "Stomach inflammation"], answer: "Surgical removal of stomach" },
+            { question: "The term neoplasm means:", options: ["New growth", "Muscle destruction", "Blood disorder", "Bone growth"], answer: "New growth" },
+            { question: "The term hemostasis refers to stopping:", options: ["Breathing", "Blood flow", "Muscle contraction", "Bone growth"], answer: "Blood flow" },
+            { question: "Neuralgia means:", options: ["Nerve tumor", "Nerve pain", "Nerve inflammation", "Nerve enlargement"], answer: "Nerve pain" },
+            { question: "Hypodermic means:", options: ["Above the skin", "Below the skin", "Within the skin", "Outside the skin"], answer: "Below the skin" },
+            { question: "The term tachycardia means:", options: ["Slow heart rate", "Fast heart rate", "Irregular heart rate", "No heartbeat"], answer: "Fast heart rate" },
+            { question: "Bradycardia means:", options: ["Fast heart rate", "Slow heart rate", "No pulse", "Extra beats"], answer: "Slow heart rate" },
+            { question: "A cardiologist is a specialist in the study of the:", options: ["Liver", "Brain", "Heart", "Kidney"], answer: "Heart" },
+            { question: "The term Erythrocyte refers to:", options: ["White blood cell", "Red blood cell", "Platelet", "Muscle cell"], answer: "Red blood cell" },
+            { question: "The term leukocyte refers to:", options: ["White blood cell", "Red blood cell", "Platelet", "Muscle cell"], answer: "White blood cell" },
+            { question: "Osteoporosis is a disease of the:", options: ["Bones", "Lungs", "Heart", "Skin"], answer: "Bones" },
+            { question: "The term renal refers to the:", options: ["Stomach", "Kidney", "Heart", "Brain"], answer: "Kidney" },
+            { question: "The prefix tri- means:", options: ["Two", "Three", "Four", "Many"], answer: "Three" },
+            { question: "The prefix quadri- means:", options: ["Four", "Two", "Three", "Many"], answer: "Four" },
+            { question: "The suffix -emia refers to:", options: ["Blood condition", "Skin condition", "Bone condition", "Nerve condition"], answer: "Blood condition" },
+            { question: "The suffix -uria refers to:", options: ["Urine", "Blood", "Digestion", "Breathing"], answer: "Urine" },
+            { question: "The root hepato- means:", options: ["Kidney", "Liver", "Stomach", "Intestine"], answer: "Liver" },
+            { question: "The suffix -penia means:", options: ["Deficiency", "Excess", "Pain", "Hardening"], answer: "Deficiency" },
+            { question: "The suffix -stenosis means:", options: ["Narrowing", "Enlargement", "Pain", "Discharge"], answer: "Narrowing" },
+            { question: "The suffix -sclerosis refers to:", options: ["Softening", "Hardening", "Tumor", "Removal"], answer: "Hardening" },
+            { question: "Which term means 'below the stomach'?", options: ["Epigastric", "Hypogastric", "Gastric", "Supragastric"], answer: "Hypogastric" },
+            { question: "The term epidermis refers to the:", options: ["Outer skin layer", "Inner skin layer", "Fat layer", "Hair follicle"], answer: "Outer skin layer" },
+            { question: "The root neuro- refers to:", options: ["Nerve", "Liver", "Kidney", "Skin"], answer: "Nerve" },
+            { question: "The combining form derm/o refers to:", options: ["Brain", "Skin", "Bone", "Muscle"], answer: "Skin" },
+            { question: "The term bronchodilator refers to a drug that:", options: ["Narrows bronchi", "Opens bronchi", "Dries secretions", "Contracts the diaphragm"], answer: "Opens bronchi" },
+            { question: "Leukopenia means:", options: ["Too many WBCs", "Too few WBCs", "Too few RBCs", "Too many RBCs"], answer: "Too few WBCs" },
+            { question: "Gastroenteritis is inflammation of:", options: ["Stomach only", "Intestine only", "Stomach and intestine", "Esophagus"], answer: "Stomach and intestine" },
+            { question: "The term arthritis means inflammation of:", options: ["Bone", "Joint", "Tendon", "Cartilage"], answer: "Joint" },
+            { question: "Myalgia refers to:", options: ["Muscle weakness", "Muscle enlargement", "Muscle pain", "Muscle spasm"], answer: "Muscle pain" },
+            { question: "Histology is the study of:", options: ["Cells", "Tissues", "Blood", "Heart"], answer: "Tissues" },
+            { question: "The prefix contra- means:", options: ["Before", "Against", "After", "Around"], answer: "Against" },
+            { question: "The suffix -phobia means:", options: ["Love", "Fear", "Pain", "Weakness"], answer: "Fear" },
+            { question: "Laryngitis is inflammation of the:", options: ["Pharynx", "Larynx", "Trachea", "Bronchi"], answer: "Larynx" },
+            { question: "The prefix peri- means:", options: ["In front", "Behind", "Around", "Below"], answer: "Around" },
+            { question: "Splenomegaly means enlargement of the:", options: ["Stomach", "Liver", "Spleen", "Colon"], answer: "Spleen" },
+            { question: "Analgesic is a drug used to:", options: ["Reduce pain", "Reduce fever", "Reduce swelling", "Reduce infection"], answer: "Reduce pain" },
+            { question: "Dyspnea means:", options: ["No breathing", "Rapid breathing", "Slow breathing", "Difficult breathing"], answer: "Difficult breathing" },
+            { question: "The term dysphagia refers to difficulty in:", options: ["Breathing", "Swallowing", "Speaking", "Hearing"], answer: "Swallowing" },
+            { question: "The term cyanosis means:", options: ["Red skin", "Blue skin", "Yellow skin", "Black skin"], answer: "Blue skin" },
+            { question: "The suffix -graphy means:", options: ["Study of", "Process of recording", "Cutting instrument", "Tissue death"], answer: "Process of recording" },
+            { question: "The prefix retro- means:", options: ["Behind", "Before", "Below", "Across"], answer: "Behind" },
+            { question: "A bronchoscope is used to examine the:", options: ["Pharynx", "Bronchi", "Stomach", "Colon"], answer: "Bronchi" },
+            { question: "Cardiomegaly refers to:", options: ["Heart attack", "Heart enlargement", "Heart weakness", "Heart inflammation"], answer: "Heart enlargement" },
+            { question: "Hepatotoxic means toxic to the:", options: ["Skin", "Liver", "Brain", "Kidney"], answer: "Liver" },
+            { question: "The prefix trans- means:", options: ["Within", "Across", "Outside", "Before"], answer: "Across" },
+            { question: "Pulmonary relates to the:", options: ["Heart", "Liver", "Lungs", "Skin"], answer: "Lungs" },
+            { question: "Hematoma is a:", options: ["Blood clot", "Collection of blood", "Blood deficiency", "Blood infection"], answer: "Collection of blood" },
+            { question: "Apnea means:", options: ["Difficulty breathing", "No breathing", "Fast breathing", "Painful breathing"], answer: "No breathing" },
+            { question: "Neonatal refers to:", options: ["New cells", "Newborns", "New muscles", "New tissues"], answer: "Newborns" },
+            { question: "The suffix -stomy means:", options: ["Closing", "Creation of opening", "Enlargement", "Hardening"], answer: "Creation of opening" },
+            { question: "The combining form lip/o refers to:", options: ["Water", "Fat", "Sugar", "Tissue"], answer: "Fat" },
+            { question: "Cephalic means pertaining to the:", options: ["Feet", "Head", "Arms", "Abdomen"], answer: "Head" },
+            { question: "Cardiopathy refers to:", options: ["Heart disease", "Lung disease", "Kidney disease", "Liver disease"], answer: "Heart disease" },
+            { question: "The suffix -oxia refers to:", options: ["Oxygen level", "Carbon dioxide level", "Blood flow", "Nerve activity"], answer: "Oxygen level" },
+            { question: "Myelitis is inflammation of the:", options: ["Bone", "Spinal cord", "Muscle", "Kidney"], answer: "Spinal cord" },
+            { question: "Cystitis is inflammation of the:", options: ["Kidney", "Bladder", "Liver", "Urethra"], answer: "Bladder" },
+            { question: "Osteomyelitis involves inflammation of:", options: ["Muscle and tendon", "Bone and marrow", "Nerve and muscle", "Bone and skin"], answer: "Bone and marrow" },
+            { question: "The combining form arthr/o refers to:", options: ["Muscle", "Bone", "Joint", "Nerve"], answer: "Joint" },
+            { question: "The suffix -ptosis means:", options: ["Drooping", "Turning", "Hardening", "Cutting"], answer: "Drooping" },
+            { question: "Stenotic refers to a structure that is:", options: ["Wide", "Narrowed", "Enlarged", "Inflamed"], answer: "Narrowed" },
+            { question: "Hepatotoxicity refers to:", options: ["Damage to kidneys", "Damage to liver", "Damage to lungs", "Damage to skin"], answer: "Damage to liver" },
+            { question: "Gastrostomy involves creating an opening in the:", options: ["Stomach", "Colon", "Esophagus", "Intestine"], answer: "Stomach" },
+            { question: "Splenectomy is removal of the:", options: ["Stomach", "Spleen", "Pancreas", "Liver"], answer: "Spleen" },
+            { question: "Osteotomy refers to:", options: ["Cutting into bone", "Cutting into skin", "Cutting into muscle", "Cutting into nerve"], answer: "Cutting into bone" },
+            { question: "Polymyositis refers to inflammation of:", options: ["One muscle", "Many muscles", "Tendons", "Muscle nerves"], answer: "Many muscles" },
+            { question: "Pneumonectomy is removal of the:", options: ["Lung", "Kidney", "Liver", "Intestine"], answer: "Lung" },
+            { question: "What does the prefix 'Circum-' mean?", options: ["Away from", "Against", "Around", "Excessive"], answer: "Around" },
+            { question: "What does the prefix 'macro-' mean?", options: ["Small", "Large", "Normal", "Excessive"], answer: "Large" },
+            { question: "What does the prefix 'micro-' mean?", options: ["Large", "Small", "Normal", "Excessive"], answer: "Small" },
+            { question: "The term 'superficial' refers to something:", options: ["Closer to the surface", "Toward the midline", "Closer to the head", "Toward the back"], answer: "Closer to the surface" },
+            { question: "The head is _____ to the neck.", options: ["Inferior", "Superior", "Medial", "Posterior"], answer: "Superior" }
+        ];
 
-  // Part 2: Applications and Suffixes
-  { question: "The term hepatitis means:", options: ["Liver tumor", "Liver inflammation", "Heart inflammation", "Kidney inflammation"], answer: "Liver inflammation" },
-  { question: "The prefix endo- means:", options: ["Green", "Within", "Around", "Large"], answer: "Within" },
-  { question: "The prefix exo- means:", options: ["Inside", "Outside", "Against", "Above"], answer: "Outside" },
-  { question: "The suffix -lysis means:", options: ["Dissolving", "Disease", "Enlargement", "Pain"], answer: "Dissolving" },
-  { question: "Myocardium refers to:", options: ["Heart muscle", "Heart lining", "Heart valve", "Heart chamber"], answer: "Heart muscle" },
-  { question: "The root pulmo- refers to the:", options: ["Liver", "Lung", "Heart", "Brain"], answer: "Lung" },
-  { question: "The term gastrectomy means:", options: ["Stomach infection", "Surgical removal of stomach", "Stomach swelling", "Stomach inflammation"], answer: "Surgical removal of stomach" },
-  { question: "The term neoplasm means:", options: ["New growth", "Muscle destruction", "Blood disorder", "Bone growth"], answer: "New growth" },
-  { question: "The term hemostasis refers to stopping:", options: ["Breathing", "Blood flow", "Muscle contraction", "Bone growth"], answer: "Blood flow" },
-  { question: "Neuralgia means:", options: ["Nerve tumor", "Nerve pain", "Nerve inflammation", "Nerve enlargement"], answer: "Nerve pain" },
-  { question: "Hypodermic means:", options: ["Above the skin", "Below the skin", "Within the skin", "Outside the skin"], answer: "Below the skin" },
-  { question: "The term tachycardia means:", options: ["Slow heart rate", "Fast heart rate", "Irregular heart rate", "No heartbeat"], answer: "Fast heart rate" },
-  { question: "Bradycardia means:", options: ["Fast heart rate", "Slow heart rate", "No pulse", "Extra beats"], answer: "Slow heart rate" },
-  { question: "A cardiologist is a specialist in the study of the:", options: ["Liver", "Brain", "Heart", "Kidney"], answer: "Heart" },
-  { question: "The term Erythrocyte refers to:", options: ["White blood cell", "Red blood cell", "Platelet", "Muscle cell"], answer: "Red blood cell" },
-  { question: "The term leukocyte refers to:", options: ["White blood cell", "Red blood cell", "Platelet", "Muscle cell"], answer: "White blood cell" },
-  { question: "Osteoporosis is a disease of the:", options: ["Bones", "Lungs", "Heart", "Skin"], answer: "Bones" },
-  { question: "The term renal refers to the:", options: ["Stomach", "Kidney", "Heart", "Brain"], answer: "Kidney" },
-  { question: "The prefix tri- means:", options: ["Two", "Three", "Four", "Many"], answer: "Three" },
-  { question: "The prefix quadri- means:", options: ["Four", "Two", "Three", "Many"], answer: "Four" },
-  { question: "The suffix -emia refers to:", options: ["Blood condition", "Skin condition", "Bone condition", "Nerve condition"], answer: "Blood condition" },
-  { question: "The suffix -uria refers to:", options: ["Urine", "Blood", "Digestion", "Breathing"], answer: "Urine" },
-  { question: "The root hepato- means:", options: ["Kidney", "Liver", "Stomach", "Intestine"], answer: "Liver" },
-  { question: "The suffix -penia means:", options: ["Deficiency", "Excess", "Pain", "Hardening"], answer: "Deficiency" },
-  { question: "The suffix -stenosis means:", options: ["Narrowing", "Enlargement", "Pain", "Discharge"], answer: "Narrowing" },
-  { question: "The suffix -sclerosis refers to:", options: ["Softening", "Hardening", "Tumor", "Removal"], answer: "Hardening" },
-  { question: "Which term means 'below the stomach'?", options: ["Epigastric", "Hypogastric", "Gastric", "Supragastric"], answer: "Hypogastric" },
-  { question: "The term epidermis refers to the:", options: ["Outer skin layer", "Inner skin layer", "Fat layer", "Hair follicle"], answer: "Outer skin layer" },
-  { question: "The root neuro- refers to:", options: ["Nerve", "Liver", "Kidney", "Skin"], answer: "Nerve" },
-  { question: "The combining form derm/o refers to:", options: ["Brain", "Skin", "Bone", "Muscle"], answer: "Skin" },
-  { question: "The term bronchodilator refers to a drug that:", options: ["Narrows bronchi", "Opens bronchi", "Dries secretions", "Contracts the diaphragm"], answer: "Opens bronchi" },
-  { question: "Leukopenia means:", options: ["Too many WBCs", "Too few WBCs", "Too few RBCs", "Too many RBCs"], answer: "Too few WBCs" },
-  { question: "Gastroenteritis is inflammation of:", options: ["Stomach only", "Intestine only", "Stomach and intestine", "Esophagus"], answer: "Stomach and intestine" },
-  { question: "The term arthritis means inflammation of:", options: ["Bone", "Joint", "Tendon", "Cartilage"], answer: "Joint" },
-  { question: "Myalgia refers to:", options: ["Muscle weakness", "Muscle enlargement", "Muscle pain", "Muscle spasm"], answer: "Muscle pain" },
-  { question: "Histology is the study of:", options: ["Cells", "Tissues", "Blood", "Heart"], answer: "Tissues" },
-  { question: "The prefix contra- means:", options: ["Before", "Against", "After", "Around"], answer: "Against" },
-  { question: "The suffix -phobia means:", options: ["Love", "Fear", "Pain", "Weakness"], answer: "Fear" },
-  { question: "Laryngitis is inflammation of the:", options: ["Pharynx", "Larynx", "Trachea", "Bronchi"], answer: "Larynx" },
-  { question: "The prefix peri- means:", options: ["In front", "Behind", "Around", "Below"], answer: "Around" },
-  { question: "Splenomegaly means enlargement of the:", options: ["Stomach", "Liver", "Spleen", "Colon"], answer: "Spleen" },
-  { question: "Analgesic is a drug used to:", options: ["Reduce pain", "Reduce fever", "Reduce swelling", "Reduce infection"], answer: "Reduce pain" },
-  { question: "Dyspnea means:", options: ["No breathing", "Rapid breathing", "Slow breathing", "Difficult breathing"], answer: "Difficult breathing" },
-  { question: "The term dysphagia refers to difficulty in:", options: ["Breathing", "Swallowing", "Speaking", "Hearing"], answer: "Swallowing" },
-  { question: "The term cyanosis means:", options: ["Red skin", "Blue skin", "Yellow skin", "Black skin"], answer: "Blue skin" },
-  { question: "The suffix -graphy means:", options: ["Study of", "Process of recording", "Cutting instrument", "Tissue death"], answer: "Process of recording" },
-  { question: "The prefix retro- means:", options: ["Behind", "Before", "Below", "Across"], answer: "Behind" },
-  { question: "A bronchoscope is used to examine the:", options: ["Pharynx", "Bronchi", "Stomach", "Colon"], answer: "Bronchi" },
-  { question: "Cardiomegaly refers to:", options: ["Heart attack", "Heart enlargement", "Heart weakness", "Heart inflammation"], answer: "Heart enlargement" },
-  { question: "The root neuro- means:", options: ["Nerve", "Muscle", "Liver", "Kidney"], answer: "Nerve" },
-
-  // Part 3: Advanced Terms
-  { question: "Hepatotoxic means toxic to the:", options: ["Skin", "Liver", "Brain", "Kidney"], answer: "Liver" },
-  { question: "The prefix trans- means:", options: ["Within", "Across", "Outside", "Before"], answer: "Across" },
-  { question: "Pulmonary relates to the:", options: ["Heart", "Liver", "Lungs", "Skin"], answer: "Lungs" },
-  { question: "Hematoma is a:", options: ["Blood clot", "Collection of blood", "Blood deficiency", "Blood infection"], answer: "Collection of blood" },
-  { question: "Apnea means:", options: ["Difficulty breathing", "No breathing", "Fast breathing", "Painful breathing"], answer: "No breathing" },
-  { question: "Neonatal refers to:", options: ["New cells", "Newborns", "New muscles", "New tissues"], answer: "Newborns" },
-  { question: "The suffix -stomy means:", options: ["Closing", "Creation of opening", "Enlargement", "Hardening"], answer: "Creation of opening" },
-  { question: "The combining form lip/o refers to:", options: ["Water", "Fat", "Sugar", "Tissue"], answer: "Fat" },
-  { question: "Cephalic means pertaining to the:", options: ["Feet", "Head", "Arms", "Abdomen"], answer: "Head" },
-  { question: "Cardiopathy refers to:", options: ["Heart disease", "Lung disease", "Kidney disease", "Liver disease"], answer: "Heart disease" },
-  { question: "The suffix -oxia refers to:", options: ["Oxygen level", "Carbon dioxide level", "Blood flow", "Nerve activity"], answer: "Oxygen level" },
-  { question: "Myelitis is inflammation of the:", options: ["Bone", "Spinal cord", "Muscle", "Kidney"], answer: "Spinal cord" },
-  { question: "Cystitis is inflammation of the:", options: ["Kidney", "Bladder", "Liver", "Urethra"], answer: "Bladder" },
-  { question: "Osteomyelitis involves inflammation of:", options: ["Muscle and tendon", "Bone and marrow", "Nerve and muscle", "Bone and skin"], answer: "Bone and marrow" },
-  { question: "The combining form arthr/o refers to:", options: ["Muscle", "Bone", "Joint", "Nerve"], answer: "Joint" },
-  { question: "The suffix -ptosis means:", options: ["Drooping", "Turning", "Hardening", "Cutting"], answer: "Drooping" },
-  { question: "Stenotic refers to a structure that is:", options: ["Wide", "Narrowed", "Enlarged", "Inflamed"], answer: "Narrowed" },
-  { question: "Hepatotoxicity refers to:", options: ["Damage to kidneys", "Damage to liver", "Damage to lungs", "Damage to skin"], answer: "Damage to liver" },
-  { question: "Gastrostomy involves creating an opening in the:", options: ["Stomach", "Colon", "Esophagus", "Intestine"], answer: "Stomach" },
-  { question: "Splenectomy is removal of the:", options: ["Stomach", "Spleen", "Pancreas", "Liver"], answer: "Spleen" },
-  { question: "Neuralgia means:", options: ["Nerve inflammation", "Nerve tumor", "Nerve pain", "Nerve enlargement"], answer: "Nerve pain" },
-  { question: "Osteotomy refers to:", options: ["Cutting into bone", "Cutting into skin", "Cutting into muscle", "Cutting into nerve"], answer: "Cutting into bone" },
-  { question: "Polymyositis refers to inflammation of:", options: ["One muscle", "Many muscles", "Tendons", "Muscle nerves"], answer: "Many muscles" },
-  { question: "Pneumonectomy is removal of the:", options: ["Lung", "Kidney", "Liver", "Intestine"], answer: "Lung" },
-  { question: "What does the prefix 'Circum-' mean?", options: ["Away from", "Against", "Around", "Excessive"], answer: "Around" },
-  { question: "What does the prefix 'macro-' mean?", options: ["Small", "Large", "Normal", "Excessive"], answer: "Large" },
-  { question: "What does the prefix 'micro-' mean?", options: ["Large", "Small", "Normal", "Excessive"], answer: "Small" },
-  { question: "The term 'superficial' refers to something:", options: ["Closer to the surface", "Toward the midline", "Closer to the head", "Toward the back"], answer: "Closer to the surface" },
-  { question: "The head is _____ to the neck.", options: ["Inferior", "Superior", "Medial", "Posterior"], answer: "Superior" }
-];
-
-
+        // 2. مصفوفة True / False
         const tfData = [
-            { q: "The sagittal plane divides the body into right and left halves.", a: 0 },
-            { q: "The coronal plane divides the body into anterior and posterior parts.", a: 0 },
-            { q: "The prefix pre- means 'after'.", a: 1 },
-            { q: "The suffix -itis means inflammation.", a: 0 },
-            { q: "The term posterior means 'toward the front'.", a: 1 },
-            { q: "The prefix anti- means 'against'.", a: 0 },
-            { q: "The combining form derm/o means 'skin'.", a: 0 },
-            { q: "The term hepatitis refers to inflammation of the kidneys.", a: 1 },
-            { q: "The term gastritis refers to inflammation of the stomach.", a: 0 },
-            { q: "Cardiomegaly means enlargement of the liver.", a: 1 },
-            { q: "The prefix tachy- means 'fast'.", a: 0 },
-            { q: "The prefix brady- means 'slow'.", a: 0 },
-            { q: "The suffix -oma means tumor.", a: 0 },
-            { q: "The cranial cavity contains the brain.", a: 0 },
-            { q: "The epidermis is the outermost layer of the skin.", a: 0 },
-            { q: "The lungs are part of the digestive system.", a: 1 },
-            { q: "The stomach is part of the digestive system.", a: 0 },
-            { q: "Appendicitis means inflammation of the appendix.", a: 0 },
-            { q: "The heart is part of the respiratory system.", a: 1 },
-            { q: "A leukocyte is a white blood cell.", a: 0 },
-            { q: "The diaphragm helps in breathing.", a: 0 },
-            { q: "Myalgia means muscle pain.", a: 0 },
-            { q: "The term cyanosis refers to blue discoloration of the skin.", a: 0 },
-            { q: "The prefix sub- means 'above'.", a: 1 },
-            { q: "The suffix -scopy refers to the surgical removal of an organ.", a: 1 },
-            { q: "The prefix peri- means around.", a: 0 },
-            { q: "Nephritis is inflammation of the liver.", a: 1 },
-            { q: "The term dyspnea refers to difficulty in breathing.", a: 0 },
-            { q: "Enteritis is inflammation of the intestines.", a: 0 },
-            { q: "The pericardium surrounds the heart.", a: 0 },
-            { q: "The term hematology refers to the study of blood.", a: 0 },
-            { q: "Bronchitis is inflammation of the bronchi.", a: 0 },
-            { q: "The term phlebitis refers to a disease of the kidneys.", a: 1 },
-            { q: "Myopathy refers to a disease of the nerves.", a: 1 },
-            { q: "The prefix retro- means behind.", a: 0 },
-            { q: "The term neoplasm always indicates cancer.", a: 1 },
-            { q: "The term hemostasis means stopping bleeding.", a: 0 },
-            { q: "The combining form lip/o refers to sugar.", a: 1 },
-            { q: "The prefix poly- means few.", a: 1 },
-            { q: "Pancreatitis refers to inflammation of the bile duct.", a: 1 },
-            { q: "Osteomyelitis involves inflammation of bone and bone marrow.", a: 0 },
-            { q: "Polyneuropathy affects only one nerve.", a: 1 },
-            { q: "Cardiomyopathy refers to a disease of the heart muscle.", a: 0 }
+            { q: "The sagittal plane divides the body into right and left halves.", a: "True" },
+            { q: "The coronal plane divides the body into anterior and posterior parts.", a: "True" },
+            { q: "The prefix pre- means 'after'.", a: "False" },
+            { q: "The suffix -itis means inflammation.", a: "True" },
+            { q: "The term posterior means 'toward the front'.", a: "False" },
+            { q: "The prefix anti- means 'against'.", a: "True" },
+            { q: "The combining form derm/o means 'skin'.", a: "True" },
+            { q: "The term hepatitis refers to inflammation of the kidneys.", a: "False" },
+            { q: "The term gastritis refers to inflammation of the stomach.", a: "True" },
+            { q: "Cardiomegaly means enlargement of the liver.", a: "False" },
+            { q: "The prefix tachy- means 'fast'.", a: "True" },
+            { q: "The prefix brady- means 'slow'.", a: "True" },
+            { q: "The suffix -oma means tumor.", a: "True" },
+            { q: "The cranial cavity contains the brain.", a: "True" },
+            { q: "The epidermis is the outermost layer of the skin.", a: "True" },
+            { q: "The lungs are part of the digestive system.", a: "False" },
+            { q: "The stomach is part of the digestive system.", a: "True" },
+            { q: "Appendicitis means inflammation of the appendix.", a: "True" },
+            { q: "The heart is part of the respiratory system.", a: "False" },
+            { q: "A leukocyte is a white blood cell.", a: "True" },
+            { q: "The diaphragm helps in breathing.", a: "True" },
+            { q: "Myalgia means muscle pain.", a: "True" },
+            { q: "The term cyanosis refers to blue discoloration of the skin.", a: "True" },
+            { q: "The prefix sub- means 'above'.", a: "False" },
+            { q: "The suffix -scopy refers to the surgical removal of an organ.", a: "False" },
+            { q: "The prefix peri- means around.", a: "True" },
+            { q: "Nephritis is inflammation of the liver.", a: "False" },
+            { q: "The term dyspnea refers to difficulty in breathing.", a: "True" },
+            { q: "Enteritis is inflammation of the intestines.", a: "True" },
+            { q: "The pericardium surrounds the heart.", a: "True" },
+            { q: "The term hematology refers to the study of blood.", a: "True" },
+            { q: "Bronchitis is inflammation of the bronchi.", a: "True" },
+            { q: "The term phlebitis refers to a disease of the kidneys.", a: "False" },
+            { q: "Myopathy refers to a disease of the nerves.", a: "False" },
+            { q: "The prefix retro- means behind.", a: "True" },
+            { q: "The term neoplasm always indicates cancer.", a: "False" },
+            { q: "The term hemostasis means stopping bleeding.", a: "True" },
+            { q: "The combining form lip/o refers to sugar.", a: "False" },
+            { q: "The prefix poly- means few.", a: "False" },
+            { q: "Pancreatitis refers to inflammation of the bile duct.", a: "False" },
+            { q: "Osteomyelitis involves inflammation of bone and bone marrow.", a: "True" },
+            { q: "Polyneuropathy affects only one nerve.", a: "False" },
+            { q: "Cardiomyopathy refers to a disease of the heart muscle.", a: "True" }
         ];
 
         let correctCount = 0;
@@ -355,58 +341,62 @@
             document.getElementById('p-count').innerText = percent + '%';
         }
 
-        function checkAnswer(btn, isCorrect, qIndex, type) {
-            const container = btn.parentElement;
+        function checkAnswer(btn, selectedValue, correctAnswer, container) {
             const buttons = container.querySelectorAll('button');
-            
             totalAnswered++;
             
-            if (isCorrect) {
+            if (selectedValue === correctAnswer) {
                 btn.classList.add('correct');
                 correctCount++;
             } else {
                 btn.classList.add('wrong');
                 wrongCount++;
-                // إظهار الإجابة الصحيحة
-                const correctIdx = type === 'mcq' ? mcqData[qIndex].a : tfData[qIndex].a;
-                buttons[correctIdx].classList.add('correct');
+                buttons.forEach(b => {
+                    if (b.innerText === correctAnswer) b.classList.add('correct');
+                });
             }
 
             buttons.forEach(b => b.disabled = true);
             updateUI();
         }
 
-        // إنشاء أسئلة MCQ
+        // إنشاء MCQ
         const mcqContainer = document.getElementById('mcq-container');
         mcqData.forEach((item, index) => {
             const card = document.createElement('div');
             card.className = 'q-card';
-            card.innerHTML = `
-                <div class="q-text">${index + 1}. ${item.q}</div>
-                <div class="options-grid">
-                    ${item.options.map((opt, i) => `
-                        <button class="option-btn" onclick="checkAnswer(this, ${i === item.a}, ${index}, 'mcq')">${opt}</button>
-                    `).join('')}
-                </div>
-            `;
+            card.innerHTML = `<div class="q-text">${index + 1}. ${item.question}</div><div class="options-grid" id="q-mcq-${index}"></div>`;
             mcqContainer.appendChild(card);
+            
+            const grid = document.getElementById(`q-mcq-${index}`);
+            item.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt, item.answer, grid);
+                grid.appendChild(btn);
+            });
         });
 
-        // إنشاء أسئلة T/F
+        // إنشاء T/F
         const tfContainer = document.getElementById('tf-container');
         tfData.forEach((item, index) => {
             const card = document.createElement('div');
             card.className = 'q-card';
-            card.innerHTML = `
-                <div class="q-text">${index + mcqData.length + 1}. ${item.q}</div>
-                <div class="options-grid">
-                    <button class="option-btn" onclick="checkAnswer(this, ${item.a === 0}, ${index}, 'tf')">True</button>
-                    <button class="option-btn" onclick="checkAnswer(this, ${item.a === 1}, ${index}, 'tf')">False</button>
-                </div>
-            `;
+            card.innerHTML = `<div class="q-text">${index + mcqData.length + 1}. ${item.q}</div><div class="options-grid" id="q-tf-${index}"></div>`;
             tfContainer.appendChild(card);
+            
+            const grid = document.getElementById(`q-tf-${index}`);
+            ["True", "False"].forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt, item.a, grid);
+                grid.appendChild(btn);
+            });
         });
 
+        updateUI();
     </script>
 </body>
 </html>
